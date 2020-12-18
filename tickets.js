@@ -1,35 +1,33 @@
-import unirest from './node_modules/unirest';
+document.getElementById("myform").addEventListener("submit", function (e) {
+  e.preventDefault();
+});
 
-var API_KEY = "afpRxa1ksuu4MFIQcUhI";
-var FD_ENDPOINT = "newaccount1608025958165";
-
-var PATH = "/api/v2/tickets";
-var URL =  "https://" + FD_ENDPOINT + ".freshdesk.com"+ PATH;
-
-var fields = {
-  'email': 'email@yourdomain.com',
-  'subject': 'Ticket subject',
-  'description': 'Ticket description.',
-  'status': 2,
-  'priority': 1
+async function createticket() {
+  let fields = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("inputEmail4").value,
+    subject: document.getElementById("Subject").value,
+    description: document.getElementById("issue").value,
+  }
+  
+  let URL = "https://newaccount1608025958165.freshdesk.com/api/v2/tickets";
+  try {
+    let senddata = await fetch(URL, {
+      method: "POST",
+      body: JSON.stringify(fields),
+      headers: {
+        "Content-type" : "application/json",
+        Authorization: "Basic " + btoa("afpRxa1ksuu4MFIQcUhI:X"),
+      },
+    });
+    if(senddata.ok)
+    {
+      return senddata;
+    }
+    else{
+      console.log("error");
+    }
+  } catch (err) {
+    console.error("error");
+  }
 }
-
-var Request = unirest.post(URL);
-
-Request.auth({
-  user: API_KEY,
-  pass: "X",
-  sendImmediately: true
-})
-.type('json')
-.send(fields)
-.end(function(response){
-  console.log(response.body)
-  console.log("Response Status : " + response.status)
-  if(response.status == 201){
-    console.log("Location Header : "+ response.headers['location'])
-  }
-  else{
-        console.log("X-Request-Id :" + response.headers['x-request-id']);
-  }
-  });
